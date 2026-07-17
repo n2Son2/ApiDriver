@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { exchangeCodeForTokens } from "@/lib/google-drive";
+import { exchangeCodeForTokens, setRefreshToken } from "@/lib/google-drive";
 
 export const runtime = "nodejs";
 
@@ -36,14 +36,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    setRefreshToken(refreshToken);
+
     return new NextResponse(
       htmlPage(
-        "Lấy refresh token thành công",
-        `<p>Copy giá trị dưới đây vào <code>.env.local</code> / Vercel env:</p>
-         <p><strong>GOOGLE_REFRESH_TOKEN=</strong></p>
+        "Đã lưu refresh token — sẵn sàng upload",
+        `<p>Refresh token đã được tự động lưu vào bộ nhớ. Bạn có thể <a href="/">upload ảnh ngay</a>.</p>
+         <p style="color:#71717a;font-size:0.9rem">Token sẽ mất khi server khởi động lại (cold start). Để lưu lâu dài, copy giá trị dưới đây vào env <code>GOOGLE_REFRESH_TOKEN</code>:</p>
          <pre id="token">${escapeHtml(refreshToken)}</pre>
          <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('token').textContent)">Copy token</button>
-         <p style="margin-top:1.5rem"><a href="/">Về trang upload</a> · <a href="/auth">Hướng dẫn auth</a></p>`
+         <p style="margin-top:1.5rem"><a href="/">Về trang upload</a></p>`
       ),
       { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } }
     );

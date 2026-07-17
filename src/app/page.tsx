@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 
 type UploadResponse = {
   ok: boolean;
@@ -12,8 +12,9 @@ type UploadResponse = {
   webContentLink?: string | null;
 };
 
+const API_KEY = "sonanh1102";
+
 export default function HomePage() {
-  const [apiKey, setApiKey] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<UploadResponse | null>(null);
@@ -35,7 +36,7 @@ export default function HomePage() {
       const res = await fetch("/api/upload", {
         method: "POST",
         headers: {
-          "x-api-key": apiKey,
+          "x-api-key": API_KEY,
         },
         body: formData,
       });
@@ -56,8 +57,7 @@ export default function HomePage() {
     <div>
       <h1 style={{ marginTop: 0 }}>Upload ảnh lên Google Drive</h1>
       <p style={{ color: "#52525b" }}>
-        Cần có <code>GOOGLE_REFRESH_TOKEN</code> trong env (lấy tại{" "}
-        <a href="/auth">/auth</a>). Gọi API với header <code>x-api-key</code>.
+        Chưa có refresh token? <a href="/auth">Đăng nhập Google tại /auth</a> trước.
       </p>
 
       <form
@@ -71,18 +71,6 @@ export default function HomePage() {
           padding: "1.25rem",
         }}
       >
-        <label style={{ display: "grid", gap: 6 }}>
-          <span>API Key (UPLOAD_API_KEY)</span>
-          <input
-            type="password"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            placeholder="change-me-to-a-strong-secret"
-            style={inputStyle}
-            required
-          />
-        </label>
-
         <label style={{ display: "grid", gap: 6 }}>
           <span>File ảnh</span>
           <input
@@ -162,9 +150,3 @@ export default function HomePage() {
   );
 }
 
-const inputStyle: CSSProperties = {
-  padding: "0.55rem 0.75rem",
-  borderRadius: 8,
-  border: "1px solid #d4d4d8",
-  fontSize: 16,
-};

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadImageToDrive } from "@/lib/google-drive";
+import { uploadImageToDrive, UPLOAD_API_KEY } from "@/lib/google-drive";
 
 export const runtime = "nodejs";
 
@@ -14,16 +14,8 @@ const ALLOWED_MIME = new Set([
 
 export async function POST(request: NextRequest) {
   try {
-    const apiKey = process.env.UPLOAD_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { ok: false, error: "UPLOAD_API_KEY chưa được cấu hình trên server" },
-        { status: 500 }
-      );
-    }
-
     const providedKey = request.headers.get("x-api-key");
-    if (!providedKey || providedKey !== apiKey) {
+    if (!providedKey || providedKey !== UPLOAD_API_KEY) {
       return NextResponse.json(
         { ok: false, error: "Unauthorized: thiếu hoặc sai x-api-key" },
         { status: 401 }

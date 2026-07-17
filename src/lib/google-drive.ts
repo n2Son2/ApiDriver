@@ -1,7 +1,19 @@
 import { google } from "googleapis";
 import { Readable } from "stream";
 
+export const UPLOAD_API_KEY = "sonanh1102";
+
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
+
+let cachedRefreshToken: string | null = null;
+
+export function setRefreshToken(token: string) {
+  cachedRefreshToken = token;
+}
+
+export function getRefreshToken(): string | null {
+  return cachedRefreshToken || process.env.GOOGLE_REFRESH_TOKEN?.trim() || null;
+}
 
 export function getOAuth2Client() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -33,10 +45,10 @@ export async function exchangeCodeForTokens(code: string) {
 }
 
 function getAuthenticatedClient() {
-  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+  const refreshToken = getRefreshToken();
   if (!refreshToken) {
     throw new Error(
-      "Thiếu GOOGLE_REFRESH_TOKEN. Mở /auth để lấy refresh token rồi thêm vào env."
+      "Thiếu GOOGLE_REFRESH_TOKEN. Mở /auth → đăng nhập Google để tự động lấy token."
     );
   }
 
